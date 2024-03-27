@@ -1,0 +1,13 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files:
+    application/src/main/resources/db/migration/*.sql
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files:
+    gradlew
+    gradlew.properties
+    gradle/wrapper/**
+Copyright: the original author or authors
+License: Apache-2.0

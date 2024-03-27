@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files:
+    **/*.json
     application/src/main/resources/db/migration/*.sql
 Copyright: Contributors to the GXF project
 License: Apache-2.0

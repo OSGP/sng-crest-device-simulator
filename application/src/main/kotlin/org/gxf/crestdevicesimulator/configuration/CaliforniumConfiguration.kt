@@ -11,9 +11,11 @@ import org.eclipse.californium.scandium.config.DtlsConfig
 import org.eclipse.californium.scandium.config.DtlsConfig.DtlsRole
 import org.springframework.context.annotation.Bean
 
+/**
+ * @param simulatorProperties
+ */
 @org.springframework.context.annotation.Configuration
 class CaliforniumConfiguration(private val simulatorProperties: SimulatorProperties) {
-
     init {
         DtlsConfig.register()
         CoapConfig.register()
@@ -22,12 +24,10 @@ class CaliforniumConfiguration(private val simulatorProperties: SimulatorPropert
     }
 
     @Bean
-    fun configure(): Configuration {
-        return Configuration.getStandard()
-            .set(CoapConfig.COAP_PORT, simulatorProperties.uri.port)
-            .set(CoapConfig.COAP_SECURE_PORT, simulatorProperties.uri.port)
-            .set(DtlsConfig.DTLS_ROLE, DtlsRole.CLIENT_ONLY)
-            .set(DtlsConfig.DTLS_RECOMMENDED_CIPHER_SUITES_ONLY, false)
-            .set(DtlsConfig.DTLS_CIPHER_SUITES, simulatorProperties.cipherSuites)
-    }
+    fun configure(): Configuration = Configuration.getStandard()
+        .set(CoapConfig.COAP_PORT, simulatorProperties.uri.port)
+        .set(CoapConfig.COAP_SECURE_PORT, simulatorProperties.uri.port)
+        .set(DtlsConfig.DTLS_ROLE, DtlsRole.CLIENT_ONLY)
+        .set(DtlsConfig.DTLS_RECOMMENDED_CIPHER_SUITES_ONLY, false)
+        .set(DtlsConfig.DTLS_CIPHER_SUITES, simulatorProperties.cipherSuites)
 }

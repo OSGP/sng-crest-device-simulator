@@ -9,6 +9,7 @@ import org.eclipse.californium.core.server.resources.CoapExchange
 class CoapResourceStub : CoapResource("coap-path") {
     var lastRequestPayload = byteArrayOf()
 
+    @Suppress("FUNCTION_NAME_INCORRECT_CASE")  // Prevent diktat from renaming to lower camel case
     override fun handlePOST(coapExchange: CoapExchange) {
         lastRequestPayload = coapExchange.requestPayload
     }

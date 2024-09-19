@@ -10,9 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration(proxyBeanMethods = false)
 internal class ObservabilityConfiguration {
-
     @Bean
-    fun observedAspect(observationRegistry: ObservationRegistry): ObservedAspect {
-        return ObservedAspect(observationRegistry)
-    }
+    fun observedAspect(observationRegistry: ObservationRegistry) = ObservedAspect(observationRegistry)
 }

@@ -6,7 +6,6 @@ package org.gxf.crestdevicesimulator.simulator.response
 import org.gxf.crestdevicesimulator.simulator.response.command.exception.InvalidPskException
 
 object PskExtractor {
-
     /**
      * Regex to split a valid PSK set command in 3 groups: Group 0 containing everything; Group 1
      * containing the next 16 chars after PSK: this is only the key; Group 2 containing the next 64
@@ -23,11 +22,14 @@ object PskExtractor {
 
     private fun extractGroups(command: String): MatchGroupCollection {
         val matchingGroups = pskKeyHashSplitterRegex.findAll(command)
-        if (matchingGroups.none())
+        if (matchingGroups.none()) {
             throw InvalidPskException("Command did not match psk set command")
+        }
 
         val groups = matchingGroups.first().groups
-        if (groups.size != 3) throw InvalidPskException("Command did not contain psk and hash")
+        if (groups.size != 3) {
+            throw InvalidPskException("Command did not contain psk and hash")
+        }
         return groups
     }
 }

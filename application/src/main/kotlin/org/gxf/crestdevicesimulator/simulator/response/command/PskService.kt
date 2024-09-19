@@ -3,9 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdevicesimulator.simulator.response.command
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.transaction.Transactional
-import org.apache.commons.codec.digest.DigestUtils
 import org.gxf.crestdevicesimulator.configuration.AdvancedSingleIdentityPskStore
 import org.gxf.crestdevicesimulator.configuration.SimulatorProperties
 import org.gxf.crestdevicesimulator.simulator.data.entity.PreSharedKey
@@ -13,8 +10,17 @@ import org.gxf.crestdevicesimulator.simulator.data.entity.PreSharedKeyStatus
 import org.gxf.crestdevicesimulator.simulator.data.repository.PskRepository
 import org.gxf.crestdevicesimulator.simulator.response.PskExtractor
 import org.gxf.crestdevicesimulator.simulator.response.command.exception.InvalidPskHashException
+
+import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.transaction.Transactional
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.stereotype.Service
 
+/**
+ * @param pskRepository
+ * @param simulatorProperties
+ * @param pskStore
+ */
 @Transactional
 @Service
 class PskService(
@@ -22,7 +28,6 @@ class PskService(
     private val simulatorProperties: SimulatorProperties,
     private val pskStore: AdvancedSingleIdentityPskStore
 ) {
-
     private val logger = KotlinLogging.logger {}
 
     fun preparePendingKey(body: String): PreSharedKey {
@@ -48,17 +53,17 @@ class PskService(
         return setNewKeyForIdentity(activePreSharedKey, newPsk)
     }
 
-    private fun setNewKeyForIdentity(previousPSK: PreSharedKey, newKey: String): PreSharedKey {
-        val newVersion = previousPSK.revision + 1
+    private fun setNewKeyForIdentity(previousPsk: PreSharedKey, newKey: String): PreSharedKey {
+        val newVersion = previousPsk.revision + 1
         logger.debug {
             "Save new key for identity ${simulatorProperties.pskIdentity} with revision $newVersion and status PENDING"
         }
         return pskRepository.save(
             PreSharedKey(
-                previousPSK.identity,
+                previousPsk.identity,
                 newVersion,
                 newKey,
-                previousPSK.secret,
+                previousPsk.secret,
                 PreSharedKeyStatus.PENDING))
     }
 
@@ -92,7 +97,7 @@ class PskService(
             pskRepository.findFirstByIdentityAndStatusOrderByRevisionDesc(
                 identity, PreSharedKeyStatus.PENDING)
 
-        if (psk != null) {
+        psk?.let {
             psk.status = PreSharedKeyStatus.INVALID
             pskRepository.save(psk)
         }

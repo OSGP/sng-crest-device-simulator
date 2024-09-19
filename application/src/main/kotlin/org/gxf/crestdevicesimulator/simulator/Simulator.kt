@@ -3,22 +3,27 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdevicesimulator.simulator
 
+import org.gxf.crestdevicesimulator.configuration.SimulatorProperties
+import org.gxf.crestdevicesimulator.simulator.message.MessageHandler
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.gxf.crestdevicesimulator.configuration.SimulatorProperties
-import org.gxf.crestdevicesimulator.simulator.message.MessageHandler
 import org.springframework.boot.CommandLineRunner
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 
+/**
+ * @param simulatorProperties
+ * @param messageHandler
+ * @param mapper
+ */
 @Component
 class Simulator(
     private val simulatorProperties: SimulatorProperties,
     private val messageHandler: MessageHandler,
     private val mapper: ObjectMapper
 ) : CommandLineRunner {
-
     private val logger = KotlinLogging.logger {}
 
     override fun run(args: Array<String>) {

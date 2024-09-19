@@ -8,34 +8,21 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class PskExtractorTest {
-
-    companion object {
-        private const val testHash =
-            "1234567890123456123456789012345612345678901234561234567890123456"
-
-        private const val validPskCommand =
-            "!PSK:1234567891234567:${testHash};PSK:1234567891234567:${testHash}:SET"
-        private const val validPskCommandWithKeyWordsInKey =
-            "!PSK:PSKaSET1PSKd2SET:${testHash};PSK:PSKaSET1PSKd2SET:${testHash}:SET"
-        private const val invalidKeySizePskCommand =
-            "!PSK:1234:${testHash};PSK:1234:${testHash}:SET"
-        private const val notPskCommand = "NoPskCommandInThisString"
-    }
-
     @ParameterizedTest
     @CsvSource(
-        "$validPskCommand, true",
-        "$validPskCommandWithKeyWordsInKey, true",
-        "$invalidKeySizePskCommand, false",
-        "$notPskCommand, false")
-    fun shouldReturnTrueWhenThereIsAPskCommandInString(pskCommand: String, isValid: Boolean) {
+        "$VALID_PSK_COMMAND, true",
+        "$VALID_PSK_COMMAND_WITH_KEY_WORDS_IN_KEY, true",
+        "$INVALID_KEY_SIZE_PSK_COMMAND, false",
+        "$NOT_PSK_COMMAND, false"
+    )
+    fun shouldReturnTrueWhenThereIsApskCommandInString(pskCommand: String, isValid: Boolean) {
         val result = PskExtractor.hasPskSetCommand(pskCommand)
         assertThat(result).isEqualTo(isValid)
     }
 
     @ParameterizedTest
     @CsvSource(
-        "$validPskCommand, 1234567891234567", "$validPskCommandWithKeyWordsInKey, PSKaSET1PSKd2SET")
+        "$VALID_PSK_COMMAND, 1234567891234567", "$VALID_PSK_COMMAND_WITH_KEY_WORDS_IN_KEY, PSKaSET1PSKd2SET")
     fun shouldReturnPskKeyFromValidPskCommand(pskCommand: String, expectedKey: String) {
         val result = PskExtractor.extractKeyFromCommand(pskCommand)
 
@@ -43,10 +30,20 @@ class PskExtractorTest {
     }
 
     @ParameterizedTest
-    @CsvSource("$validPskCommand, $testHash", "$validPskCommandWithKeyWordsInKey, $testHash")
+    @CsvSource("$VALID_PSK_COMMAND, $TEST_HASH", "$VALID_PSK_COMMAND_WITH_KEY_WORDS_IN_KEY, $TEST_HASH")
     fun shouldReturnHashFromValidPskCommand(pskCommand: String, expectedHash: String) {
         val result = PskExtractor.extractHashFromCommand(pskCommand)
 
         assertThat(result).isEqualTo(expectedHash)
+    }
+
+    @Suppress("WRONG_DECLARATIONS_ORDER")  // Prevent diktat from moving TEST_HASH
+    companion object {
+        private const val TEST_HASH = "1234567890123456123456789012345612345678901234561234567890123456"
+        private const val INVALID_KEY_SIZE_PSK_COMMAND = "!PSK:1234:$TEST_HASH;PSK:1234:$TEST_HASH:SET"
+        private const val NOT_PSK_COMMAND = "NoPskCommandInThisString"
+        private const val VALID_PSK_COMMAND = "!PSK:1234567891234567:$TEST_HASH;PSK:1234567891234567:$TEST_HASH:SET"
+        private const val VALID_PSK_COMMAND_WITH_KEY_WORDS_IN_KEY =
+            "!PSK:PSKaSET1PSKd2SET:$TEST_HASH;PSK:PSKaSET1PSKd2SET:$TEST_HASH:SET"
     }
 }

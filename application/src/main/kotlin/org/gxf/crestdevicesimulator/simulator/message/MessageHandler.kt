@@ -3,6 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdevicesimulator.simulator.message
 
+import org.gxf.crestdevicesimulator.configuration.SimulatorProperties
+import org.gxf.crestdevicesimulator.simulator.CborFactory
+import org.gxf.crestdevicesimulator.simulator.coap.CoapClientService
+import org.gxf.crestdevicesimulator.simulator.response.CommandService
+import org.gxf.crestdevicesimulator.simulator.response.PskExtractor
+import org.gxf.crestdevicesimulator.simulator.response.command.PskService
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
@@ -14,14 +21,15 @@ import org.eclipse.californium.core.CoapClient
 import org.eclipse.californium.core.CoapResponse
 import org.eclipse.californium.core.coap.MediaTypeRegistry
 import org.eclipse.californium.core.coap.Request
-import org.gxf.crestdevicesimulator.configuration.SimulatorProperties
-import org.gxf.crestdevicesimulator.simulator.CborFactory
-import org.gxf.crestdevicesimulator.simulator.coap.CoapClientService
-import org.gxf.crestdevicesimulator.simulator.response.CommandService
-import org.gxf.crestdevicesimulator.simulator.response.PskExtractor
-import org.gxf.crestdevicesimulator.simulator.response.command.PskService
 import org.springframework.stereotype.Service
 
+/**
+ * @param coapClientService
+ * @param simulatorProperties
+ * @param pskService
+ * @param mapper
+ * @param commandService
+ */
 @Service
 class MessageHandler(
     private val coapClientService: CoapClientService,
@@ -31,13 +39,6 @@ class MessageHandler(
     private val commandService: CommandService
 ) {
     private val logger = KotlinLogging.logger {}
-
-    companion object {
-        private const val URC_FIELD = "URC"
-        private const val URC_PSK_SUCCESS = "PSK:SET"
-        private const val URC_PSK_ERROR = "PSK:EQER"
-        private const val DL_FIELD = "DL"
-    }
 
     fun sendMessage(jsonNode: JsonNode) {
         val request = createRequest(jsonNode)
@@ -55,14 +56,19 @@ class MessageHandler(
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            if (coapClient != null) coapClientService.shutdownCoapClient(coapClient)
+            coapClient?.let {
+                coapClientService.shutdownCoapClient(coapClient)
+            }
         }
     }
 
     fun createRequest(jsonNode: JsonNode): Request {
         val payload =
-            if (simulatorProperties.produceValidCbor) CborFactory.createValidCbor(jsonNode)
-            else CborFactory.createInvalidCbor()
+            if (simulatorProperties.produceValidCbor) {
+                CborFactory.createValidCbor(jsonNode)
+            } else {
+                CborFactory.createInvalidCbor()
+            }
 
         return Request.newPost()
             .apply { options.setContentFormat(MediaTypeRegistry.APPLICATION_CBOR) }
@@ -73,15 +79,9 @@ class MessageHandler(
         if (response.isSuccess) {
             val payload = String(response.payload)
             when {
-                PskExtractor.hasPskSetCommand(payload) -> {
-                    handlePskSetCommand(payload)
-                }
-                pskService.isPendingKeyPresent() -> {
-                    pskService.changeActiveKey()
-                }
-                commandService.hasRebootCommand(payload) -> {
-                    sendRebootSuccesMessage(payload)
-                }
+                PskExtractor.hasPskSetCommand(payload) -> handlePskSetCommand(payload)
+                pskService.isPendingKeyPresent() -> pskService.changeActiveKey()
+                commandService.hasRebootCommand(payload) -> sendRebootSuccesMessage(payload)
             }
         } else {
             logger.error { "Received error response with ${response.code}" }
@@ -136,9 +136,16 @@ class MessageHandler(
             listOf(
                 TextNode(urc),
                 ObjectNode(JsonNodeFactory.instance, mapOf(DL_FIELD to TextNode(receivedCommand))))
-        val urcArray = mapper.valueToTree<ArrayNode>(urcList)
+        val urcArray: ArrayNode = mapper.valueToTree<ArrayNode>(urcList)
         newMessage.replace(URC_FIELD, urcArray)
         logger.debug { "Sending message with URC $urcArray" }
         return newMessage
+    }
+
+    companion object {
+        private const val DL_FIELD = "DL"
+        private const val URC_FIELD = "URC"
+        private const val URC_PSK_ERROR = "PSK:EQER"
+        private const val URC_PSK_SUCCESS = "PSK:SET"
     }
 }

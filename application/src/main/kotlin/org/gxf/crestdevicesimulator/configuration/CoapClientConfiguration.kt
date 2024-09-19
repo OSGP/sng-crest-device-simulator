@@ -8,12 +8,15 @@ import org.gxf.crestdevicesimulator.simulator.data.entity.PreSharedKeyStatus
 import org.gxf.crestdevicesimulator.simulator.data.repository.PskRepository
 import org.springframework.context.annotation.Bean
 
+/**
+ * @param simulatorProperties
+ * @param pskRepository
+ */
 @org.springframework.context.annotation.Configuration
 class CoapClientConfiguration(
     private val simulatorProperties: SimulatorProperties,
     private val pskRepository: PskRepository
 ) {
-
     @Bean
     fun pskStore(): AdvancedSingleIdentityPskStore {
         val store = AdvancedSingleIdentityPskStore(simulatorProperties.pskIdentity)
@@ -21,7 +24,9 @@ class CoapClientConfiguration(
             pskRepository.findFirstByIdentityAndStatusOrderByRevisionDesc(
                 simulatorProperties.pskIdentity, PreSharedKeyStatus.ACTIVE)
 
-        if (savedKey == null) {
+        savedKey?.let {
+            store.key = savedKey.preSharedKey
+        } ?: run {
             val initialPreSharedKey =
                 PreSharedKey(
                     simulatorProperties.pskIdentity,
@@ -31,8 +36,6 @@ class CoapClientConfiguration(
                     PreSharedKeyStatus.ACTIVE)
             pskRepository.save(initialPreSharedKey)
             store.key = simulatorProperties.pskKey
-        } else {
-            store.key = savedKey.preSharedKey
         }
 
         return store

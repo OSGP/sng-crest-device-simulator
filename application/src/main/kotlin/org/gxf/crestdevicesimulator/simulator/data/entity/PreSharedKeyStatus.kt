@@ -6,6 +6,7 @@ package org.gxf.crestdevicesimulator.simulator.data.entity
 enum class PreSharedKeyStatus {
     ACTIVE,
     INACTIVE,
+    INVALID,
     PENDING,
-    INVALID
+    ;
 }

@@ -3,12 +3,26 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdevicesimulator.configuration
 
-import java.net.URI
-import java.time.Duration
 import org.eclipse.californium.scandium.dtls.cipher.CipherSuite
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.core.io.Resource
 
+import java.net.URI
+import java.time.Duration
+
+/**
+ * @property uri
+ * @property pskIdentity
+ * @property pskKey
+ * @property pskSecret
+ * @property sleepDuration
+ * @property scheduledMessage
+ * @property successMessage
+ * @property failureMessage
+ * @property rebootSuccessMessage
+ * @property produceValidCbor
+ * @property cipherSuites
+ */
 @ConfigurationProperties(prefix = "simulator.config")
 class SimulatorProperties(
     val uri: URI,

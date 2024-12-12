@@ -29,14 +29,17 @@ class Simulator(
         Thread.ofVirtual().start {
             val simulatorState = SimulatorState()
             var numberOfMessagesInBatch = 0
+            var sendShortMessage = false
             while (true) {
                 logger.info { "Sending device message" }
-                val immediateResponseRequested = messageHandler.sendMessage(simulatorState)
+                val immediateResponseRequested = messageHandler.sendMessage(simulatorState, sendShortMessage)
+                sendShortMessage = immediateResponseRequested
 
                 if (!immediateResponseRequested || numberOfMessagesInBatch++ >= maxNumberOfMessagesInBatch) {
                     logger.info { "Sleeping for: ${simulatorProperties.sleepDuration}" }
                     Thread.sleep(simulatorProperties.sleepDuration)
                     numberOfMessagesInBatch = 0
+                    sendShortMessage = false
                 }
             }
         }

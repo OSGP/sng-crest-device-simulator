@@ -25,7 +25,6 @@ class MessageHandler(
     private val coapClientService: CoapClientService,
     private val simulatorProperties: SimulatorProperties,
     private val pskService: PskService,
-    private val mapper: ObjectMapper,
     private val commandService: CommandService,
     private val handlers: MutableList<out CommandHandler>,
     private val jacksonObjectMapper: ObjectMapper
@@ -33,11 +32,9 @@ class MessageHandler(
     private val logger = KotlinLogging.logger {}
 
     companion object {
-        private const val URC_FIELD = "URC"
         private const val URC_PSK_SUCCESS = "PSK:SET"
         private const val URC_PSK_ERROR = "PSK:EQER"
         private const val REBOOT_SUCCESS = "INIT"
-        private const val DL_FIELD = "DL"
     }
 
     fun sendMessage(simulatorState: SimulatorState, sendShortMessage: Boolean = false): Boolean {

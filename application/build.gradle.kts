@@ -8,27 +8,23 @@ plugins {
 
 dependencies {
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation(libs.bundles.spring)
 
-    implementation(kotlin("reflect"))
+    implementation(libs.kotlinReflect)
     implementation(libs.bundles.californium)
     implementation(libs.logging)
 
     implementation(libs.commonsCodec)
+    implementation(libs.jacksonCbor)
+    implementation(libs.jakartaXml)
 
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+    runtimeOnly(libs.micrometerPrometheusModule)
+    runtimeOnly(libs.bundles.db)
 
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql")
-    runtimeOnly("org.postgresql:postgresql")
+    testImplementation(libs.springBootStarterTest)
+    testImplementation(libs.mockitoKotlin)
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(testLibs.mockitoKotlin)
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly(libs.junitPlatformLauncher)
 
     // Generate test and integration test reports
     jacocoAggregation(project(":application"))
@@ -53,12 +49,12 @@ testing {
             useJUnitJupiter()
             dependencies {
                 implementation(project())
-                implementation("org.springframework.boot:spring-boot-starter-test")
-                implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-                implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
+                implementation(libs.springBootStarterTest)
+                implementation(libs.springBootStarterDataJpa)
+                implementation(libs.jacksonCbor)
                 implementation.bundle(libs.bundles.californium)
-                implementation("org.awaitility:awaitility")
-                runtimeOnly("com.h2database:h2")
+                implementation(libs.awaitility)
+                runtimeOnly(libs.h2)
             }
         }
     }

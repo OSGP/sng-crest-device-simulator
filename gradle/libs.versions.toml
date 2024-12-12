@@ -42,6 +42,8 @@ spring = ["springBootStarterActuator", "springBootStarterWeb", "springBootStarte
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version.ref = "avro-plugin" }
 dependencyManagement = { id = "io.spring.dependency-management", version.ref = "dependency-management" }
 eclipse = { id = "eclipse" }
+jacoco = { id = "jacoco" }
+jacocoReportAggregation = { id = "jacoco-report-aggregation" }
 jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

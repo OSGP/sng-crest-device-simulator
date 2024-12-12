@@ -8,20 +8,29 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @JsonNaming(CrestNamingStrategy::class)
-data class DeviceMessage(
+open class BaseDeviceMessage(
+    var id: Long = 867787050253370,
+    var mid: Int = 1,
+    var con: String = "M",
+    var urc: List<Any> = listOf("INIT", DeviceMessageDownlink()),
+    var fmc: Int = 0,
+)
+
+@JsonNaming(CrestNamingStrategy::class)
+class DeviceMessage(
     var a: List<Int> = listOf(3, 0, 0, 0, 0, 0, 0, 0),
     var bat: Int = 3758,
-    var con: String = "M",
+    con: String = "M",
     var d: Int = 8,
     var eid: String = "89001012012341234012345678901224",
-    var fmc: Int = 0,
+    fmc: Int = 0,
     var fw: Int = 2100,
     var h1: List<Int> = listOf(463),
     var iccid: String = "89882280666074936745",
-    var id: Long = 867787050253370,
+    id: Long = 867787050253370,
     var imsi: Long = 460023210226023,
     var mem: Int = 0,
-    var mid: Int = 1,
+    mid: Int = 1,
     var msi: Int = 0,
     var p1: List<Int> =
         listOf(
@@ -182,9 +191,9 @@ data class DeviceMessage(
     var ts: Int = 1693318384,
     var tsl: Int = 1693318384,
     var upt: Int = 100,
-    var urc: List<Any> = listOf("INIT", DeviceMessageDownlink()),
+    urc: List<Any> = listOf("INIT", DeviceMessageDownlink()),
     @JsonProperty("cID") var cid: Int = 49093243
-)
+) : BaseDeviceMessage(id, mid, con, urc, fmc)
 
 @JsonNaming(PropertyNamingStrategies.UpperSnakeCaseStrategy::class)
 data class DeviceMessageDownlink(var dl: String = "0")

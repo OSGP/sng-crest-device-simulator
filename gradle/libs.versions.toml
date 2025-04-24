@@ -7,7 +7,7 @@ kotlin-logging = "7.0.7"
 mockk = "1.14.0"
 sonarqube = "6.1.0.5360"
 spotless = "7.0.3"
-spring-boot = "3.4.4"
+spring-boot = "3.4.5"
 springmockk = "4.0.2"
 
 [libraries]

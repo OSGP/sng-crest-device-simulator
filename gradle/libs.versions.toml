@@ -2,12 +2,12 @@
 californium = "3.14.0"
 commonsCodec = "1.18.0"
 dependency-management = "1.1.7"
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlin-logging = "7.0.7"
-mockk = "1.14.2"
+mockk = "1.14.4"
 sonarqube = "6.2.0.5505"
-spotless = "7.0.4"
-spring-boot = "3.5.0"
+spotless = "7.1.0"
+spring-boot = "3.5.3"
 springmockk = "4.0.2"
 
 [libraries]
